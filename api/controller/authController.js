@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from 'bcryptjs'
 import { errorHandler } from "../utils/error.js";
+import jwt from 'jsonwebtoken';
 
 const signup=async(req,res,next)=>{
     const {username,email,password}=req.body;
@@ -22,4 +23,28 @@ const signup=async(req,res,next)=>{
     }
 }
 
-export {signup};
+const signin =async(req,res,next)=>{
+    const {email,password}=req.body;
+    try {
+        const existingUser =await User.findOne({email});
+        if(existingUser){
+            const isPassValid = bcrypt.compareSync(password,existingUser.password);
+            if(!isPassValid){
+                return next(errorHandler(401,'Invalid credentials'));
+            };
+            const token = jwt.sign({id:existingUser._id},process.env.JWT_SECRET);
+            const {password:pass,...rest}=existingUser._doc;
+            res.cookie('access-token',token,{
+                httpOnly:true, 
+            }).status(200).json(rest);
+            res.status(200).json({success:true,message:'User signed in'})
+        }else{
+            next(errorHandler(404,'User not registered!'))
+        }
+    } catch (error) {
+        next(error
+
+        )
+    }
+}
+export {signup,signin };
