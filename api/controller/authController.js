@@ -25,6 +25,7 @@ const signup=async(req,res,next)=>{
 
 const signin =async(req,res,next)=>{
     const {email,password}=req.body;
+    if(!email||!password) return next(errorHandler(401,'Missing fields!'))
     try {
         const existingUser =await User.findOne({email});
         if(existingUser){
