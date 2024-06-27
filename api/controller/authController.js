@@ -36,8 +36,7 @@ const signin =async(req,res,next)=>{
             const {password:pass,...rest}=existingUser._doc;
             res.cookie('access-token',token,{
                 httpOnly:true, 
-            }).status(200).json(rest);
-            res.status(200).json({success:true,message:'User signed in'})
+            }).status(200).json({success:true,rest});
         }else{
             next(errorHandler(404,'User not registered!'))
         }
