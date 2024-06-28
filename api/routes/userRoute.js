@@ -8,4 +8,5 @@ userRoute.get('/getuser',getUser);
 userRoute.post('/update/:id',verifyToken,updateUser);
 userRoute.delete('/delete/:id',verifyToken,deleteUser);
 
+
 export default userRoute;

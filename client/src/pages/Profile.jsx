@@ -5,7 +5,10 @@ import { app } from '../firebase';
 import {
   updateUserFailure, updateUserStart, updateUserSuccess, deleteUserStart,
   deleteFailure,
-  deleteUserSuccess
+  deleteUserSuccess,
+  signoutUserStart,
+  signoutUserFailure,
+  signoutUserSuccess
 } from '../redux/userSlice.js'
 
 const Profile = () => {
@@ -37,6 +40,22 @@ const Profile = () => {
       }
     } catch (error) {
       dispatch(deleteFailure(error.message));
+    }
+  }
+  const handleSignOut =  async()=>{
+    try {
+      dispatch(signoutUserStart());
+      const res = await fetch ('/api/auth/logout',{
+        method:'POST',
+      });
+      const data = await res.json();
+      if(!data.success){
+       dispatch(signoutUserFailure(data))
+      }else{
+        dispatch(signoutUserSuccess(data));
+      }      
+    } catch (error) {
+      dispatch(signoutUserFailure(error))
     }
   }
 
@@ -124,7 +143,7 @@ const Profile = () => {
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span  className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={handleSignOut}  className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       {error && <p className='text-red-500 mt-5'>{error ? error : ''}</p>}
       {updateSuccess && <p className='text-green-700'>User updated successfully!</p>}
