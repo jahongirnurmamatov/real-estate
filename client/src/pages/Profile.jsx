@@ -22,6 +22,8 @@ const Profile = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const dispatch = useDispatch();
   const { loading, error } = useSelector(state => state.user);
+  const [showListingErr,setShowListingErr]=useState(false);
+  const [listings,setListings]=useState([]);
 
   const handleDeleteUser = async () => {
     try {
@@ -116,6 +118,21 @@ const Profile = () => {
     );
   };
 
+  const handleShowListing = async()=>{
+    try {
+      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const data = await res.json();
+      if(data.success===false){
+        setShowListingErr(true);
+        return;
+      }
+      setListings(data);
+      console.log(listings);
+    } catch (error) {
+      setShowListingErr(true);
+    }
+  }
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='font-semibold text-3xl text-center my-7'>Profile</h1>
@@ -149,6 +166,27 @@ const Profile = () => {
       </div>
       {error && <p className='text-red-500 mt-5'>{error ? error : ''}</p>}
       {updateSuccess && <p className='text-green-700'>User updated successfully!</p>}
+      <button onClick={handleShowListing} className='text-green-700 w-full mt-5'>Show Listings</button>
+      <p className='text-red-700 mt-5'>{showListingErr&&'Error in showing listings'}</p>
+      {
+        listings && listings.length>0 && 
+        <div className='flex flex-col gap-4'>
+          <h1 className='text-center my-7 text-2xl font-semibold'>Your Listings</h1>
+          {listings.map((listing)=>(
+          <div className='border rounded-lg p-3 flex justify-between items-center'  key={listing._id}>
+            <Link  to={`/listing/${listing._id }`}>
+            <img className='w-16 h-16 object-contain ' src={listing.imageUrls[0]} alt="" />
+            </Link>
+            <Link className='flex-1 ml-2' to={`/listing/${listing._id }`}><p className='font-semibold hover:underline truncate text-slate-700 '>{listing.name}</p></Link>
+            <div className='flex flex-col gap-0'>
+              <button className='font-semibold uppercase text-green-700'>Edit </button>
+              <button className='font-semibold uppercase text-red-700'>Delete</button>
+            </div>
+            
+          </div>
+        ))}
+        </div>
+      }
     </div>
   );
 };

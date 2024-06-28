@@ -44,7 +44,6 @@ const getUserListing = async(req,res,next)=>{
     }
     try {
         const listings = await Listing.find({userRef:req.params.id});
-        console.log(listings);
         res.status(200).json(listings);
 
     } catch (error) {
