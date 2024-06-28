@@ -117,6 +117,21 @@ const Profile = () => {
       }
     );
   };
+  const handleListingDelete =async(listingId)=>{
+    try {
+      const res = await fetch('/api/listing/delete/'+listingId,{
+        method:"DELETE"
+      });
+      const data = res.json();
+      if(data.success===false){
+        console.log(data.message);
+        return;
+      }
+      setListings(prev=>prev.filter((listing)=>listing._id!==listingId));
+    } catch (error) {
+      
+    }
+  }
 
   const handleShowListing = async()=>{
     try {
@@ -127,7 +142,6 @@ const Profile = () => {
         return;
       }
       setListings(data);
-      console.log(listings);
     } catch (error) {
       setShowListingErr(true);
     }
@@ -179,8 +193,8 @@ const Profile = () => {
             </Link>
             <Link className='flex-1 ml-2' to={`/listing/${listing._id }`}><p className='font-semibold hover:underline truncate text-slate-700 '>{listing.name}</p></Link>
             <div className='flex flex-col gap-0'>
-              <button className='font-semibold uppercase text-green-700'>Edit </button>
-              <button className='font-semibold uppercase text-red-700'>Delete</button>
+              <button className='font-semibold hover:opacity-70 uppercase text-green-700'>Edit </button>
+              <button onClick={()=>handleListingDelete(listing._id)} className='font-semibold hover:opacity-70 uppercase text-red-700'>Delete</button>
             </div>
             
           </div>
