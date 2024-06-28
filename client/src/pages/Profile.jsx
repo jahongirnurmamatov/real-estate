@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import {updateUserFailure,updateUserStart,updateUserSuccess} from '../redux/userSlice.js'
+import {
+  updateUserFailure, updateUserStart, updateUserSuccess, deleteUserStart,
+  deleteFailure,
+  deleteUserSuccess
+} from '../redux/userSlice.js'
 
 const Profile = () => {
   const { currentUser } = useSelector(state => state.user);
@@ -11,33 +15,51 @@ const Profile = () => {
   const [filePerc, setFilePerc] = useState(null);
   const [fileUploadErr, setFileUploadErr] = useState(false);
   const [formData, setFormData] = useState({});
-  const [updateSuccess, setUpdateSuccess]=useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
   const dispatch = useDispatch();
-  const {loading,error}=useSelector(state=>state.user)
+  const { loading, error } = useSelector(state => state.user);
 
-  
-  const handleChange = (e)=>{
-    setFormData({...formData, [e.target.id]:e.target.value})
-  }
-  const handleSumbit =async (e)=>{
-    dispatch(updateUserStart());
-    e.preventDefault();
+  const handleDeleteUser = async () => {
     try {
-      const res = await fetch('/api/user/update/'+currentUser._id,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify(formData)
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+        method:'DELETE',
       });
       const data = await res.json();
       if(data.success){
-        console.log('updated');
-        console.log(data.rest);
+        console.log('deleting user')
+        dispatch(deleteUserSuccess(data.message));
+        return;
+      }else{
+        console.log('failed to delete user');
+        dispatch(deleteFailure(data.message));
+        return;
+      }
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+    }
+  }
+
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
+  const handleSumbit = async (e) => {
+    dispatch(updateUserStart());
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/user/update/' + currentUser._id, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (data.success) {     
         dispatch(updateUserSuccess(data.rest));
         setUpdateSuccess(true);
-      }else{
-        console.log('error in updating')
+      } else {
         dispatch(updateUserFailure(data.message))
       }
     } catch (error) {
@@ -95,16 +117,16 @@ const Profile = () => {
           </div>
         )}
         {fileUploadErr && <span className='text-red-700 self-center'>Error in uploading image (image must be less than 2mb)</span>}
-        <input onChange={handleChange}  type="text"  defaultValue={currentUser.username} placeholder='username' className='border p-3 rounded-lg' id='username' />
+        <input onChange={handleChange} type="text" defaultValue={currentUser.username} placeholder='username' className='border p-3 rounded-lg' id='username' />
         <input onChange={handleChange} type="text" defaultValue={currentUser.email} placeholder='email' className='border p-3 rounded-lg' id='email' />
         <input onChange={handleChange} type="password" placeholder='password' className='border p-3 rounded-lg' id='password' />
-        <button disabled={loading} className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Updating...':'update'}</button>
+        <button disabled={loading} className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Updating...' : 'update'}</button>
       </form>
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
+        <span  className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
-      <p className='text-red-500 mt-5'>{error ? error :''}</p>
+      {error && <p className='text-red-500 mt-5'>{error ? error : ''}</p>}
       {updateSuccess && <p className='text-green-700'>User updated successfully!</p>}
     </div>
   );
