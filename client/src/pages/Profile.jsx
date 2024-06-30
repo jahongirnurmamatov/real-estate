@@ -22,21 +22,21 @@ const Profile = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const dispatch = useDispatch();
   const { loading, error } = useSelector(state => state.user);
-  const [showListingErr,setShowListingErr]=useState(false);
-  const [listings,setListings]=useState([]);
+  const [showListingErr, setShowListingErr] = useState(false);
+  const [listings, setListings] = useState([]);
 
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`,{
-        method:'DELETE',
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
       });
       const data = await res.json();
-      if(data.success){
+      if (data.success) {
         console.log('deleting user')
         dispatch(deleteUserSuccess(data.message));
         return;
-      }else{
+      } else {
         console.log('failed to delete user');
         dispatch(deleteFailure(data.message));
         return;
@@ -45,18 +45,18 @@ const Profile = () => {
       dispatch(deleteFailure(error.message));
     }
   }
-  const handleSignOut =  async()=>{
+  const handleSignOut = async () => {
     try {
       dispatch(signoutUserStart());
-      const res = await fetch ('/api/auth/logout',{
-        method:'POST',
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
       });
       const data = await res.json();
-      if(!data.success){
-       dispatch(signoutUserFailure(data))
-      }else{
+      if (!data.success) {
+        dispatch(signoutUserFailure(data))
+      } else {
         dispatch(signoutUserSuccess(data));
-      }      
+      }
     } catch (error) {
       dispatch(signoutUserFailure(error))
     }
@@ -78,7 +78,7 @@ const Profile = () => {
         body: JSON.stringify(formData)
       });
       const data = await res.json();
-      if (data.success) {     
+      if (data.success) {
         dispatch(updateUserSuccess(data.rest));
         setUpdateSuccess(true);
       } else {
@@ -117,27 +117,27 @@ const Profile = () => {
       }
     );
   };
-  const handleListingDelete =async(listingId)=>{
+  const handleListingDelete = async (listingId) => {
     try {
-      const res = await fetch('/api/listing/delete/'+listingId,{
-        method:"DELETE"
+      const res = await fetch('/api/listing/delete/' + listingId, {
+        method: "DELETE"
       });
       const data = res.json();
-      if(data.success===false){
+      if (data.success === false) {
         console.log(data.message);
         return;
       }
-      setListings(prev=>prev.filter((listing)=>listing._id!==listingId));
+      setListings(prev => prev.filter((listing) => listing._id !== listingId));
     } catch (error) {
-      
+
     }
   }
 
-  const handleShowListing = async()=>{
+  const handleShowListing = async () => {
     try {
       const res = await fetch(`/api/user/listings/${currentUser._id}`);
       const data = await res.json();
-      if(data.success===false){
+      if (data.success === false) {
         setShowListingErr(true);
         return;
       }
@@ -176,29 +176,31 @@ const Profile = () => {
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span onClick={handleSignOut}  className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       {error && <p className='text-red-500 mt-5'>{error ? error : ''}</p>}
       {updateSuccess && <p className='text-green-700'>User updated successfully!</p>}
       <button onClick={handleShowListing} className='text-green-700 w-full mt-5'>Show Listings</button>
-      <p className='text-red-700 mt-5'>{showListingErr&&'Error in showing listings'}</p>
+      <p className='text-red-700 mt-5'>{showListingErr && 'Error in showing listings'}</p>
       {
-        listings && listings.length>0 && 
+        listings && listings.length > 0 &&
         <div className='flex flex-col gap-4'>
           <h1 className='text-center my-7 text-2xl font-semibold'>Your Listings</h1>
-          {listings.map((listing)=>(
-          <div className='border rounded-lg p-3 flex justify-between items-center'  key={listing._id}>
-            <Link  to={`/listing/${listing._id }`}>
-            <img className='w-16 h-16 object-contain ' src={listing.imageUrls[0]} alt="" />
-            </Link>
-            <Link className='flex-1 ml-2' to={`/listing/${listing._id }`}><p className='font-semibold hover:underline truncate text-slate-700 '>{listing.name}</p></Link>
-            <div className='flex flex-col gap-0'>
-              <button className='font-semibold hover:opacity-70 uppercase text-green-700'>Edit </button>
-              <button onClick={()=>handleListingDelete(listing._id)} className='font-semibold hover:opacity-70 uppercase text-red-700'>Delete</button>
+          {listings.map((listing) => (
+            <div className='border rounded-lg p-3 flex justify-between items-center' key={listing._id}>
+              <Link to={`/listing/${listing._id}`}>
+                <img className='w-16 h-16 object-contain ' src={listing.imageUrls[0]} alt="" />
+              </Link>
+              <Link className='flex-1 ml-2' to={`/listing/${listing._id}`}><p className='font-semibold hover:underline truncate text-slate-700 '>{listing.name}</p></Link>
+              <div className='flex flex-col gap-0'>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className='font-semibold hover:opacity-70 uppercase text-green-700'>Edit </button>
+                </Link>
+                <button onClick={() => handleListingDelete(listing._id)} className='font-semibold hover:opacity-70 uppercase text-red-700'>Delete</button>
+              </div>
+
             </div>
-            
-          </div>
-        ))}
+          ))}
         </div>
       }
     </div>

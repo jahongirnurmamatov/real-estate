@@ -27,6 +27,7 @@ export const  deleteList=async(req,res,next)=>{
     }
 }
 export const editListing = async (req, res, next) => {
+    console.log('message from fronend')
     try {
         const listing = await Listing.findById(req.params.id);
         if (!listing) {
@@ -46,3 +47,15 @@ export const editListing = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getListing = async(req,res,next)=>{
+ try {
+    const listing = await Listing.findById(req.params.id);
+    if(!listing){
+        return next(errorHandler(404,'No listing found!'));
+    };
+    res.status(200).json(listing);
+ } catch (error) {
+    next(error);
+ }   
+}
