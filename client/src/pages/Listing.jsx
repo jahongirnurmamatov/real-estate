@@ -73,7 +73,7 @@ export default function Listing() {
                             </p>
                             {listing.offer  && (
                                  <p className='p-3 bg-green-900 w-[200px] text-white rounded-md  text-center '>
-                                    ${listing.regularPrice-listing.discountPrice}
+                                    ${listing.regularPrice-listing.discountPrice} DISCOUNT
                              </p>
                             )}
                             

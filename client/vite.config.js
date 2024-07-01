@@ -11,5 +11,8 @@ export default defineConfig({
       }
     }
   },
-  plugins: [react()],
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    // ...
+  ],
 })

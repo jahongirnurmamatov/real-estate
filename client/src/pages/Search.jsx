@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
 
 
 export default function Search() {
@@ -18,7 +19,7 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
-  console.log(listings)
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
@@ -217,6 +218,17 @@ export default function Search() {
         <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>
           Listing results:
         </h1>
+        <div className='flex flex-wrap p-7 gap-4 '>
+            {!loading && listings.length===0 && (
+                <p className='text-xl text-slate-700 p-7'>No listing found!</p>
+            )}
+            {loading && (
+                <p className='text-center text-xl text-slate-700 w-full'>Loading...</p>
+            )}
+            {!loading && listings && listings.map((listing)=>(
+                <ListingItem  key={listing._id} listing={listing}/>
+            ))}
+        </div>
         
       </div>
     </div>
