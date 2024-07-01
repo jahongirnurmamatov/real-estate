@@ -6,13 +6,18 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
 import { FaLocationDot } from "react-icons/fa6";
 import {FaBed, FaBath, FaParking, FaChair} from 'react-icons/fa'
+import { useSelector } from 'react-redux';
+import Contact from '../components/Contact';
 
 export default function Listing() {
     SwiperCore.use([Navigation]);
     const params = useParams();
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(false);
+    const {currentUser} = useSelector(state=>state.user);
+    const [contact,setContact] = useState(false);
+
 
 
     useEffect(() => {
@@ -52,7 +57,8 @@ export default function Listing() {
                             ))
                         }
                     </Swiper>
-                    <div className='mt-7 mx-5 '>
+                  
+                    <div className='flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4'>
                         <h1 className='mt-7 text-2xl font-bold text-slate-900'>{listing.name}
                             <span>-${listing.discountPrice > 0 ? listing.discountPrice : listing.regularPrice}</span>
                             <span>{listing.type === 'rent' ? '/month' : ''}</span>
@@ -90,7 +96,12 @@ export default function Listing() {
                             </li>
 
                         </ul>
+                        {currentUser && listing.userRef!==currentUser._id && !contact&& <button onClick={()=>setContact(true)} className='w-full p-3 bg-slate-800 text-white rounded-lg uppercase hover:opacity-95'>Contact landlord</button>}
+                        {
+                            contact && <Contact listing={listing}/>
+                        }
                     </div>
+              
                 </>
             )}
 

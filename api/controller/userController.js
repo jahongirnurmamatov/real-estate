@@ -3,10 +3,6 @@ import User from "../models/User.js";
 import { errorHandler } from "../utils/error.js";
 import bcrypt from 'bcryptjs';
 
-const getUser = async (req, res) => {
-    res.send('this is user');
-}
-
 const deleteUser = async (req,res,next)=>{
     if(req.user.id!==req.params.id) return next(errorHandler(401,'You can only delete your own account'))
     try {
@@ -48,6 +44,16 @@ const getUserListing = async(req,res,next)=>{
 
     } catch (error) {
         next(error.message)
+    }
+}
+const getUser = async(req,res,next)=>{
+    try {
+        const user = await User.findById(req.params.id);
+        if(!user) {return next(errorHandler(404,'User does not exist!'));}
+        const {password: pass, ...rest} = user._doc;
+        res.status(200).json(rest);
+    } catch (error) {
+        next(error)
     }
 }
 export { getUser, updateUser,deleteUser,getUserListing };
