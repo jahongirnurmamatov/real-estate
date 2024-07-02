@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
+   
     // ...
   ],
 })

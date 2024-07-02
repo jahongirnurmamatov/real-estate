@@ -8,6 +8,8 @@ import { FaLocationDot } from "react-icons/fa6";
 import {FaBed, FaBath, FaParking, FaChair} from 'react-icons/fa'
 import { useSelector } from 'react-redux';
 import Contact from '../components/Contact';
+import React from 'react';
+
 
 export default function Listing() {
     SwiperCore.use([Navigation]);
