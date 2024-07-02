@@ -12,7 +12,6 @@ const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
